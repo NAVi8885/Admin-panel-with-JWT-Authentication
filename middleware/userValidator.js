@@ -1,6 +1,7 @@
 const {check, validationResult} = require('express-validator');
 
 const validateUser = [
+    
     check('name')
     .notEmpty()
     .isLength({min:3, max: 15}).withMessage('name not valid'),
@@ -13,9 +14,8 @@ const validateUser = [
 
     check('confirmPassword')
     .isLength({min:3}),
-    
-    check('otp') 
-    .isLength({min: 6, max: 6}),
+    // check('otp') 
+    // .isLength({min: 6, max: 6}),
     
     (req, res, next) => {
         const errors = validationResult(req);
@@ -24,6 +24,7 @@ const validateUser = [
         }
        next()
     }
+
 ];
 
 const loginValidator = [
@@ -41,6 +42,8 @@ const loginValidator = [
         next()
     }
 ]
+
+
 
 module.exports = {
     validateUser,
