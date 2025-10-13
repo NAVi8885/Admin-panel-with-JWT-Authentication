@@ -1,15 +1,7 @@
-login
+// adminLogin
 
-      <% if (!pswd || !userExist) { %>
-        <div class="alert alert-danger text-center" role="alert">
-          <%= message %>
-        </div>
-      <% } %>
-
-forgotPassward
-
-    <% if (!userExist) { %>
-      <div class="alert alert-danger py-2 err" style="display: block;">
-        <%= message %>
+    <% if ( !pswd || !userExist) { %>
+      <div class="error-message err text-danger" style="display: block;">
+        ⚠️<%= message %>
       </div>
     <% } %>

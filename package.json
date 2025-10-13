@@ -12,14 +12,17 @@
   "dependencies": {
     "bcrypt": "^6.0.0",
     "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
+    "express-async-handler": "^1.2.0",
     "express-session": "^1.18.2",
     "express-validator": "^7.2.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.0",
     "nodemailer": "^7.0.9",
+    "nodemailer-otp": "^1.0.8",
     "nodemon": "^3.1.10"
   }
 }

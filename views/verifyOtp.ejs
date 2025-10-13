@@ -13,16 +13,13 @@
     <p class="text-muted mb-4">Enter the OTP sent to your email</p>
 
     <!-- Error message if OTP is invalid -->
-    <% if (!otpExist) { %>
-      <div class="alert alert-danger py-2 err" style="display: block;">
-       <p>⚠️<%= message %></p> 
-      </div>
-    <% } %>
 
-    <form action="/verifyOtp" method="POST">
+
+    <form action="/verifyOtp?email=<%= email %>" method="POST">
       <div class="mb-3 text-start">
         <label for="otp" class="form-label">OTP</label>
-        <input 
+        <div id="countdown-display">60</div>   
+        <input
           type="text" 
           class="form-control" 
           id="otp" 
@@ -41,5 +38,18 @@
   <!-- Bootstrap JS Bundle -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/index.js"></script>
+  <script>
+    let countDownTime = 60;
+    const countDownElement = document.getElementById('countdown-display');
+
+    const interval = setInterval(function() {
+    countDownTime--;
+    countDownElement.textContent = countDownTime + ' seconds remaining';
+    if (countDownTime <= 0) {
+      clearInterval(interval);
+      countDownElement.textContent = 'Time is up!';
+      }
+    }, 1000);   
+  </script>
 </body>
 </html>

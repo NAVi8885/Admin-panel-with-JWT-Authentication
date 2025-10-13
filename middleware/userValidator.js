@@ -14,12 +14,12 @@ const validateUser = [
 
     check('confirmPassword')
     .isLength({min:3}),
-    // check('otp') 
-    // .isLength({min: 6, max: 6}),
+
     
     (req, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
+            console.log(errors)
             return res.render('register', { errors: errors.array()});
         }
        next()
@@ -43,9 +43,21 @@ const loginValidator = [
     }
 ]
 
+const otpValidator = [
+    check('otp')
+    .isLength({min:4}).withMessage('Please enter a valid OTP'),
 
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if(!errors.isEmpty()){
+            return res.render('verifyOtp', { errors: errors.array()})
+        }
+        next()
+    }
+]
 
 module.exports = {
     validateUser,
-    loginValidator
+    loginValidator,
+    otpValidator
 };
