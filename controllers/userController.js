@@ -121,6 +121,8 @@ const resetPassword = expressAsyncHandler ( async (req, res) => {
     
     // console.log('Restpassword = ', email);
     const errors = [];
+
+    
     if (!password) errors.push({ msg: 'Enter the password', path: 'password' });
     if (!confirmPassword) errors.push({ msg: 'Confirm the password', path: 'confirmPassword' });
     if (password && confirmPassword && password !== confirmPassword) {
@@ -128,9 +130,7 @@ const resetPassword = expressAsyncHandler ( async (req, res) => {
     }
 
     if (errors.length) {
-        console.log('entered if block');
-    return res.render('resetPassword', { email, errors, message: null });
-    
+        return res.render('resetPassword', { email, errors, message: null });
     }
 
     await User.findOneAndUpdate({ email }, { $set: {password: await bcrypt.hash(req.body.password, 10)} },{new : true});
