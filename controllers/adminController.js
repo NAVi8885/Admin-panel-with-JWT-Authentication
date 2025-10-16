@@ -1,40 +1,37 @@
-const Admin = require('../models/admin')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const { otpSender } = require('../otpApp')
-const expressAsyncHandler = require('express-async-handler')
-const User = require('../models/user')
+const Admin = require('../models/admin');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const expressAsyncHandler = require('express-async-handler');
+const User = require('../models/User');
 
 // ADMIN LOGIN
 
 const adminLogin = expressAsyncHandler(async (req, res) => {
-   const { email, password } = req.body;
+   const { name, password } = req.body;
 
-   const admin = await Admin.findOne({ email });
-   if (!admin) {
-      return res.render('adminLogin', { errors: [{ msg: 'Admin not found', path: 'email' }] });
+   const admin = await Admin.findOne({ name });
+    
+   if ( !admin ) {
+      return res.render('adminLogin', { pswd: true, userExist: false, message: 'Admin not found' });
    }
 
-   const isPassword = await bcrypt.compare(password, admin.password);
-   if (!isPassword) {
-      return res.render('adminLogin', { errors: [{ msg: 'Password incorrect', path: 'password' }] });
+   if ( password !== admin.password ) {
+      return res.render('adminLogin', { pswd: false, userExist: true, message: 'Password incorrect' });
    }
 
-   const token = jwt.sign(
+   const token = await jwt.sign(
       { id: admin._id, email: admin.email, role: 'admin' },
       process.env.JWT_SECRET_KEY,
       { expiresIn: '1d' }
    );
-
    res.cookie('adminToken', token, { maxAge: 24 * 60 * 60 * 1000 });
-   req.session.admin = admin;
-
    return res.redirect('/admindashboard');
 });
 
 // USER LIST
 
 const displayUser = expressAsyncHandler(async (req, res) => {
+  
    const users = await User.find().sort({ createdAt: -1 });
    return res.render('adminDash', { users, errors: [] });
 });
@@ -42,21 +39,22 @@ const displayUser = expressAsyncHandler(async (req, res) => {
 // ADD USER
 
 const addUser = expressAsyncHandler(async (req, res) => {
-   const { name, email, password, confirmPassword } = req.body;
+   const { name, email, password} = req.body;
 
    const existing = await User.findOne({ email });
-   if (existing) {
-      return res.render('addUser', { errors: [{ msg: 'Email already exists', path: 'email' }] });
+
+   if(!name || !email || !password) {
+      return res.render('adminUserForm', { userExist: true, pswd: true, message: 'All fields are required' });
    }
 
-   if (password !== confirmPassword) {
-      return res.render('addUser', { errors: [{ msg: 'Password does not match', path: 'password' }] });
+   if(existing) {
+      return res.render('adminUserForm', { userExist: false, pswd: true, message: 'Email already exists' });
    }
 
    const hashedPass = await bcrypt.hash(password, 10);
    await User.create({ name, email, password: hashedPass, isBlocked: false });
 
-   return res.redirect('/admin/users');
+   return res.redirect('/admindashboard');
 });
 
 // EDIT USER 
@@ -72,21 +70,23 @@ const editUser = expressAsyncHandler(async (req, res) => {
 
 const updateUser = expressAsyncHandler(async (req, res) => {
    const { id } = req.params;
-   const { name, email, password, confirmPassword } = req.body;
+   const { name, email, password} = req.body;
 
-   const update = { name, email };
+   if(!name || !email) {
+      const user = await User.findById(id);
+   return res.render('adminUpdateForm', { user, errors: [{ msg: 'Name and email are required' }] 
+   });
+}
 
-   if (password || confirmPassword) {
-      if (password !== confirmPassword) {
-         const user = await User.findById(id);
-         return res.render('editUser', { user, errors: [{ msg: 'Password does not match', path: 'password' }] });
+
+      if(password) {
+         const salt = bcrypt.genSalt(10);
+         const hashedPassword = await bcrypt.hash(password, parseInt(salt));
+
+         await User.findByIdAndUpdate(id, {name,  email, password: hashedPassword})
       }
-      update.password = await bcrypt.hash(password, 10);
-  }
-
-   await User.findByIdAndUpdate(id, update);
-   return res.redirect('/admin/users');
-});
+      res.redirect('/admindashboard');
+})
 
 // BLOCK OR UNBLOCK USER 
 
@@ -95,11 +95,12 @@ const blockUser = expressAsyncHandler(async (req, res) => {
    const user = await User.findById(id);
 
    if (user) {
-      user.isBlocked = !user.isBlocked;
+      user.isBlock = !user.isBlock;
+      console.log('blocked =', user.isBlock)
       await user.save();
    }
 
-   return res.redirect('/admin/users');
+   return res.redirect('/admindashboard');
 });
 
 // DELETE USER
@@ -107,14 +108,15 @@ const blockUser = expressAsyncHandler(async (req, res) => {
 const deleteUser = expressAsyncHandler(async (req, res) => {
    const { id } = req.params;
    await User.deleteOne({ _id: id });
-   return res.redirect('/admin/users');
+   return res.redirect('/admindashboard');
 });
 
 // LOG OUT ADMIN
 
 const logoutAdmin = expressAsyncHandler(async (req, res) => {
-   res.clearCookie('token', { httpOnly: true, sameSite: 'strict' });
-   req.session.admin = null;
+   console.log("logoutAdmin - ")
+   res.clearCookie('adminToken');
+   req.session = null;
    return res.redirect('/admin/login');
 });
 

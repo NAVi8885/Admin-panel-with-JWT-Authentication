@@ -14,6 +14,12 @@
 
     <!-- Error message (if invalid email/password) -->
 
+    <% if ( !pswd || !userExist) { %>
+      <div class="error-message err text-danger" style="display: block;">
+        ⚠️<%= message %>
+      </div>
+    <% } %>
+    
     <form action="/admin/login" method="POST">
       <div class="mb-3 text-start">
         <label for="email" class="form-label">User Name</label>
@@ -21,7 +27,7 @@
           type="text" 
           class="form-control" 
           id="userName" 
-          name="userName" 
+          name="name" 
           placeholder="Enter admin UserName" 
           required>
       </div>

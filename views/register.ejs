@@ -16,9 +16,7 @@
       <form  action="/register" method="POST">
  <!-- 🔴 Error message -->
       <% if (errors && errors.length) {
-        const error = errors.find(err =>( err.path=='name' ||err.path=='email' ||err.path=='password') 
-         
-        ) 
+        const error = errors.find(err =>( err.path=='name' ||err.path=='email' ||err.path=='password')) 
         if (error){ %>
           <div class="text-danger" >
              <%= error.msg%>

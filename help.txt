@@ -5,3 +5,12 @@
         ⚠️<%= message %>
       </div>
     <% } %>
+
+
+admin update form
+     <% if (val) {%> 
+    <div class="error-message err" style="display: block;">
+      ⚠️ <%= message %>
+    </div>
+    <%}%>
+

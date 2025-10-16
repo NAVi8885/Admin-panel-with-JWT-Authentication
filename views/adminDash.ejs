@@ -43,7 +43,7 @@
 <body>
 <div class="d-flex justify-content-between p-3 bg-light border-bottom">
   <h1 class="text-primary">Admin pannel</h1>
-  <form action="/logoutadmin" method="POST">
+  <form action="/logout/admin" method="POST">
     <button type="submit" class="btn btn-danger">
       🚪 Logout
     </button>
@@ -66,20 +66,20 @@
         </tr>
       </thead>
       <tbody>
-        <% if (user && user.length > 0) { %>
-          <% user.forEach((user, index) => { %>
+        <% if (users && users.length > 0) { %>
+          <% users.forEach((users, index) => { %>
             <tr>
               <td><%= index + 1 %></td>
-              <td><%= user.name %></td>
-              <td><%= user.email %></td>
-             <td class="<%= user.isBlocked ? 'text-danger' : 'text-success'  %> fs-5">
-              <%= user.isBlocked ? 'blocked' : 'active' %>
+              <td><%= users.name %></td>
+              <td><%= users.email %></td>
+             <td class="<%= users.isBlock ? 'text-danger' : 'text-success'  %> fs-5">
+              <%= users.isBlock ? 'blocked' : 'active' %>
             </td>
 
               <td>
-                <a href="/admin/user/block/<%= user._id %>" class="btn btn-sm btn-block me-1"><%= user.isBlocked?'UnBlock':'Block'%></a>
-                <a href="/admin/user/edit/<%=user._id%>" class="btn btn-sm btn-update me-1">Update</a>
-                <a href="/admin/user/delete/<%= user._id %>" class="btn btn-sm btn-delete">Delete</a>
+                <a href="/admin/user/block/<%= users._id %>" class="btn btn-sm btn-block me-1"><%= users.isBlocked?'UnBlock':'Block'%></a>
+                <a href="/admin/user/edit/<%=users._id%>" class="btn btn-sm btn-update me-1">Update</a>
+                <a href="/admin/user/delete/<%= users._id %>" class="btn btn-sm btn-delete">Delete</a>
               </td>
             </tr>
           <% }) %>

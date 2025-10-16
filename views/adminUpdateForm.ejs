@@ -13,19 +13,19 @@
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-    <h4 class="mb-0">Update User</h4>
-    <a href="/admindashboard" class="text-white" style="font-size: 1.5rem; text-decoration: none;">&times;</a>
-</div>
-        <!-- 🔴 Error message -->
-     <% if (val) {%> 
-    <div class="error-message err" style="display: block;">
-      ⚠️ <%= message %>
-    </div>
-    <%}%>
-
+                    <h4 class="mb-0">Update User</h4>
+                    <a href="/admindashboard" class="text-white" style="font-size: 1.5rem; text-decoration: none;">&times;</a>
+                </div>
+                
+                <!-- 🔴 Error message -->
+                <% if (typeof errors !== 'undefined' && errors.length) { %>
+                <div class="error-message err" style="display: block;">
+                ⚠️<%= errors[0].msg %>
+                </div>
+                <% } %>
 
                 <div class="card-body">
-                    <form action="/admin/user/edit/<%=user._id%>" method="POST">
+                    <form action="/admin/user/edit/<%= user._id %>" method="POST">
                         <div class="mb-3">
                             <label for="name" class="form-label">Name</label>
                             <input type="text" name="name" id="name" class="form-control" value="<%=user.name%>" required>
@@ -36,7 +36,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" name="password" id="password" class="form-control"  %>>
+                            <input type="password" name="password" id="password" class="form-control" >
                         </div>
                         <button type="submit" class="btn btn-success w-100">Update User</button>
                     </form>

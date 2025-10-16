@@ -34,9 +34,10 @@ const loginValidator = [
     check('password')
     .notEmpty().withMessage('Please enter password'),
 
+
     (req, res, next) => {
         const errors = validationResult(req);
-        if(!errors.isEmpty()){
+        if(!errors.isEmpty()){console.log("helo");
             return res.render('login', { errors: errors.array()})
         }
         next()

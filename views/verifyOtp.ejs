@@ -14,8 +14,8 @@
 
     <!-- Error message if OTP is invalid -->
 
-
-    <form action="/verifyOtp?email=<%= email %>" method="POST">
+    <form action="/verifyOtp" method="POST">
+      <input type="hidden" name="email" value="<%= email %>">
       <div class="mb-3 text-start">
         <label for="otp" class="form-label">OTP</label>
         <div id="countdown-display">60</div>   

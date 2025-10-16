@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const adminSchema = new Schema({
-    userName: {
+    name: {
         type: String,
         required: true
     },

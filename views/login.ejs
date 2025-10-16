@@ -14,13 +14,13 @@
       <!-- 🔴 Show error only if passed from server -->
       <% if (errors && errors.length) {
         const error = errors.find(err => err.path=='name'
-         
         ) 
         if (error){ %>
           <div class="text-danger" >
              <%= error.msg%>
           </div>
        <%} }%>
+
 
       <h2 class="text-center mb-4">Login</h2>
       <form method="POST" action="/login">
@@ -37,7 +37,15 @@
             required
           >
         </div>
-
+ <% if (errors && errors.length) {
+        const error = errors.find(err => err.path=='password'
+         
+        ) 
+        if (error){ %>
+          <div class="text-danger" >
+             <%= error.msg%>
+          </div>
+       <%} }%>
         <!-- Password -->
         <div class="mb-3">
           <label for="password" class="form-label">Password</label>

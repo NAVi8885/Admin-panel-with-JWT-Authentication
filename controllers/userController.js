@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require("../models/User");
 const bcrypt = require("bcrypt")
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer-otp')
@@ -33,6 +33,10 @@ const register = expressAsyncHandler ( async (req, res) => {
 const login = expressAsyncHandler ( async (req, res) => {
     const { email , password } = req.body
     const isUser = await User.findOne({email})
+    if(isUser.isBlock === true){
+        return res.render('login', {errors : [{msg:'user is blocked', path:'name'}]})
+    }
+
     if(!isUser){
         return res.render('login', {errors : [{msg:'User not found', path:'name'}]})
     }
@@ -40,15 +44,14 @@ const login = expressAsyncHandler ( async (req, res) => {
     if(!isPassword){
         return res.render('login', {errors: [{msg:'Password incorrect',path:'password'}]})
     }
+    const token = jwt.sign({id:isUser._id},process.env.JWT_SECRET_KEY,{expiresIn: '1d'})
 
-    const token = jwt.sign({id:isUser._id, email: isUser.email},process.env.JWT_SECRET_KEY,{expiresIn: '1d'})
-    console.log(token)
     res.cookie('token', token,{
         maxAge:24*60*60*1000
     })
 
-    req.session.user = isUser;
-    return res.redirect('/dashboard')
+    // req.session.user = isUser;
+    return res.redirect(`/dashboard`)
 })
 
 // LOG OUT
@@ -76,19 +79,18 @@ const forgotPassword = expressAsyncHandler ( async (req, res) => {
             otpExpiry: new Date(Date.now() + 2 * 60 * 1000) // 1 mint
         }
     );
-
+    // return res.render('verifyOtp', {email})
     return res.redirect(`/verifyOtp?email=${email}`);
 })
 
 // VERIFY OTP
 
 const verifyOtp = expressAsyncHandler (async (req, res) => {
-    const { otp } = req.body;
-    const { email } = req.query;
+    const { otp, email } = req.body;
 
+// const email = req.query;
+    // console.log("Email in verifyOtp:", email);
 
-    console.log(otp)
-    console.log("Email in verifyOtp:", email);
     const user = await User.findOne({ email })
     if (!user) {
     return res.render('verifyOtp', { message: 'User not found', email });
@@ -113,17 +115,25 @@ const verifyOtp = expressAsyncHandler (async (req, res) => {
 // RESET PASSWORD
 
 const resetPassword = expressAsyncHandler ( async (req, res) => {
-    const { email } = req.query;
-    const { password, confirmPassword } = req.body;
-    if(password !== confirmPassword){
-        return res.render('resetPassword', {errors: [{msg:'Enter both password',path:"password"}]})
-    }
-    if(!password || !confirmPassword){
-        return res.render('resetPassword', {errors: [{msg:'Password does not match',path:"confirmPassword"}]})
+   // const { email } = req.query; 
+    
+    const { email, password, confirmPassword } = req.body;
+    
+    // console.log('Restpassword = ', email);
+    const errors = [];
+    if (!password) errors.push({ msg: 'Enter the password', path: 'password' });
+    if (!confirmPassword) errors.push({ msg: 'Confirm the password', path: 'confirmPassword' });
+    if (password && confirmPassword && password !== confirmPassword) {
+    errors.push({ msg: 'Passwords do not match', path: 'confirmPassword' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    await User.findOneAndUpdate({ email }, { password: hashedPassword });
+    if (errors.length) {
+        console.log('entered if block');
+    return res.render('resetPassword', { email, errors, message: null });
+    
+    }
+
+    await User.findOneAndUpdate({ email }, { $set: {password: await bcrypt.hash(req.body.password, 10)} },{new : true});
 
     return res.redirect('/login');
 })

@@ -19,4 +19,4 @@ app.set('view engine', 'ejs');
 
 app.use('/', router);
 
-app.listen(3999, () => console.log("Server started running"));
+app.listen(3999, () => console.log(`Server started running at 3999`));
